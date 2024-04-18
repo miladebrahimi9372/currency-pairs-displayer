@@ -5,7 +5,11 @@ type TableProps = {
  data: RowDataType[]
  dataProperty?: string
  keyProperty: string
- onClickCell?: (arg: { cellKey: string; rowValue: RowDataType }) => void
+ onClickCell?: (arg: {
+  cellKey: string
+  rowValue: RowDataType
+  rowIndex: number
+ }) => void
 }
 
 const Table: FC<TableProps> = ({
@@ -29,7 +33,7 @@ const Table: FC<TableProps> = ({
     </thead>
     <tbody>
      {dataProperty
-      ? data.map((rowData) => (
+      ? data.map((rowData, index) => (
          <tr
           key={(rowData[dataProperty] as RowDataType)[keyProperty] as Key}
           className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
@@ -40,7 +44,8 @@ const Table: FC<TableProps> = ({
             onClick={() => {
              onClickCell?.({
               cellKey: key,
-              rowValue: rowData[dataProperty] as RowDataType
+              rowValue: rowData[dataProperty] as RowDataType,
+              rowIndex: index
              })
             }}
            >

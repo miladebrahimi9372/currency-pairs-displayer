@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useRef, useState } from 'react'
 import { Table } from './components'
 import Modal from './components/modal/Modal'
 import { RowDataType } from './components/table/Table'
@@ -47,8 +47,8 @@ const symbols = [
 
 function App() {
  const [isModalOpen, setIsModalOpen] = useState(false)
- const [selectedRow, setSelectedRow] = useState({})
  const { data, isLoading, error } = useGetCurrencyPairsList(symbols)
+ const selectedRowIndexRef = useRef(0)
 
  return (
   <div className="w-screen h-screen flex justify-center items-center bg-gray-300 relative">
@@ -62,10 +62,9 @@ function App() {
      columns={columns}
      keyProperty="symbol"
      dataProperty="data"
-     onClickCell={({ cellKey, rowValue }) => {
-      console.log('##################', { cellKey, rowValue })
+     onClickCell={({ cellKey, rowIndex }) => {
       if (cellKey === 'symbol') {
-       setSelectedRow(rowValue || {})
+       selectedRowIndexRef.current = rowIndex
        setIsModalOpen(true)
       }
      }}
@@ -79,17 +78,19 @@ function App() {
    >
     <div className="bg-gray-200 p-4 rounded-md w-96">
      <ul>
-      {Object.entries(selectedRow).map(([key, value], index, array) => (
-       <li
-        key={key}
-        className={`p-1 border-b  flex justify-between ${
-         index === array.length - 1 ? '' : 'border-gray-900'
-        }`}
-       >
-        <span>{camelToTitleCase(key)}</span>
-        <span>{value as ReactNode}</span>
-       </li>
-      ))}
+      {Object.entries(data?.[selectedRowIndexRef.current]?.data || {}).map(
+       ([key, value], index, array) => (
+        <li
+         key={key}
+         className={`p-1 border-b  flex justify-between ${
+          index === array.length - 1 ? '' : 'border-gray-900'
+         }`}
+        >
+         <span>{camelToTitleCase(key)}</span>
+         <span>{value as ReactNode}</span>
+        </li>
+       )
+      )}
      </ul>
     </div>
    </Modal>
